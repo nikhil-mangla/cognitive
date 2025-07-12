@@ -32,6 +32,13 @@ interface AuthenticatedRequest extends Request {
   user: User;
 }
 
+// Type-safe middleware wrapper
+const withAuth = (handler: (req: AuthenticatedRequest, res: Response) => Promise<void | Response>) => {
+  return async (req: Request, res: Response) => {
+    return handler(req as AuthenticatedRequest, res);
+  };
+};
+
 // Authentication middleware
 const authenticateToken = async (req: Request, res: Response, next: any) => {
   const authHeader = req.headers.authorization;
@@ -133,17 +140,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User profile routes
-  app.get("/api/user/profile", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  app.get("/api/user/profile", authenticateToken, withAuth(async (req: AuthenticatedRequest, res: Response) => {
     try {
       const user = req.user;
       const subscription = await storage.getSubscription(user.id);
       
+      // Return profile data in the format expected by the Electron app
       res.json({
         name: user.name,
         email: user.email,
-        jobRole: user.jobRole,
-        company: user.company,
-        resumeName: user.resumeName,
+        jobRole: user.jobRole || null,
+        company: user.company || null,
+        resume: {}, // Empty object as specified
+        resumeName: user.resumeName || null,
         subscription: subscription ? {
           plan: subscription.plan,
           status: subscription.status,
@@ -154,9 +163,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
-  });
+  }));
 
-  app.patch("/api/user/profile", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  app.patch("/api/user/profile", authenticateToken, withAuth(async (req: AuthenticatedRequest, res: Response) => {
     try {
       const updates = req.body;
       const user = await storage.updateUser(req.user.id, updates);
@@ -176,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
-  });
+  }));
 
   // Subscription routes
   app.post("/api/create-subscription", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {

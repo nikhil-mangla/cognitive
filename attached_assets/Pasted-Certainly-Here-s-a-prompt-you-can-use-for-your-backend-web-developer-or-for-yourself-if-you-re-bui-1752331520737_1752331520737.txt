@@ -1,0 +1,73 @@
+Certainly! Here’s a prompt you can use for your backend/web developer (or for yourself if you’re building the backend) to ensure the `/api/user/profile` endpoint works as required for your Electron app:
+
+---
+
+**Prompt for Backend Developer:**
+
+---
+
+**Subject:**  
+Fix `/api/user/profile` endpoint to support Electron app authentication
+
+---
+
+**Task:**  
+We need the `/api/user/profile` endpoint on our website (`https://profile-connect-sync.lovable.app`) to work as a real API for our Electron app integration.
+
+**Requirements:**
+
+1. **API Route:**  
+   - The endpoint should be available at:  
+     `https://profile-connect-sync.lovable.app/api/user/profile`
+
+2. **Authentication:**  
+   - The endpoint must read the `Authorization: Bearer <accessToken>` header from the request.
+   - It should validate the JWT or session token.
+
+3. **Response:**  
+   - If the token is valid, return the user’s profile as JSON, e.g.:
+     ```json
+     {
+       "name": "Nikhil",
+       "email": "nikhil2305@gmail.com",
+       "jobRole": "software-engineer",
+       "company": "google",
+       "resume": {},
+       "resumeName": "NIKHIL MANGLA  -  RESUME .pdf"
+     }
+     ```
+   - If the token is missing or invalid, return a 401 Unauthorized error.
+
+4. **No HTML:**  
+   - The endpoint must not return an HTML page. It should only return JSON or a 401 error.
+
+5. **Testing:**  
+   - After implementation, test with:
+     ```sh
+     curl -H "Authorization: Bearer <real_token>" https://profile-connect-sync.lovable.app/api/user/profile
+     ```
+   - The response should be the user’s profile in JSON format.
+
+---
+
+**Example (Express.js):**
+```js
+app.get('/api/user/profile', authenticateToken, (req, res) => {
+  res.json({
+    name: req.user.name,
+    email: req.user.email,
+    jobRole: req.user.jobRole,
+    company: req.user.company,
+    resume: req.user.resume,
+    resumeName: req.user.resumeName
+  });
+});
+```
+
+---
+
+**Please ensure this endpoint is working as described so our Electron app can fetch user profiles after login.**
+
+---
+
+Let me know if you need a code sample for a specific backend framework!

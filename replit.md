@@ -8,6 +8,16 @@ This is a full-stack web application built with React frontend and Express backe
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (January 2025)
+
+### API Integration for Electron App
+- Fixed `/api/user/profile` endpoint to work as proper API for Electron app integration
+- Endpoint now returns user profile data in JSON format exactly as required
+- Proper JWT token validation with `Authorization: Bearer <token>` header support
+- Returns 401 Unauthorized for missing/invalid tokens
+- Response format includes: name, email, jobRole, company, resume (empty object), resumeName, subscription data
+- Successfully tested with curl commands - endpoint working correctly for desktop app integration
+
 ## System Architecture
 
 ### Frontend Architecture
